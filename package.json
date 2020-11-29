@@ -1,0 +1,20 @@
+{
+  "name": "jsonvalidator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "JSONValidator.js",
+  "dependencies": {
+    "mqtt": "^4.2.6",
+    "node": "^15.2.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.chalmers.se:courses/dit355/2020/group-1/jsonvalidator.git"
+  },
+  "author": "",
+  "license": "ISC"
+}
