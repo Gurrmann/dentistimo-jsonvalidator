@@ -1,5 +1,5 @@
 var mqtt = require('mqtt')
-var client  = mqtt.connect('mqtt://localhost:1883')
+var client  = mqtt.connect('mqtt://test.mosquitto.org')
 // Matches the time attribute from a booking request
 // E.g. "YYYY-(MM or M)-(DD or D) (HH or H):MM" but with numbers "1234-12-1 14:30"
 // ^ and $ to check that the entire string matches, only contains what we expect
@@ -25,16 +25,30 @@ function IsJsonString(str) {
         typeof json.requestid === "number" && 
         typeof json.dentistid === "number" && 
         typeof json.issuance === "number" && 
-        typeof json.time === "string") {
+        typeof json.time === "string"
+        ) {
         // Check that time matches timeRegex
         if(timeRegex.test(json.time)){
           // Creates a new json object with the valid attributes, discards any extra attributes
-          var validReq = {
-            "userid": json.userid,
-            "requestid": json.requestid,
-            "dentistid": json.dentistid,
-            "issuance": json.issuance,
-            "time": json.time
+          var validReq = ''
+          if( typeof json.numberOfDentists === "number"){
+            validReq = {
+              "userid": json.userid,
+              "requestid": json.requestid,
+              "dentistid": json.dentistid,
+              "issuance": json.issuance,
+              "time": json.time,
+              "numberOfDentists": json.numberOfDentists
+            }            
+          }
+          else {
+            validReq = {
+              "userid": json.userid,
+              "requestid": json.requestid,
+              "dentistid": json.dentistid,
+              "issuance": json.issuance,
+              "time": json.time
+            }
           }
           // Converts object to a string and publishes
           client.publish('validBookingRequest', JSON.stringify(validReq))
