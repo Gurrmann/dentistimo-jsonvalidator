@@ -5,13 +5,16 @@ var client  = mqtt.connect('mqtt://test.mosquitto.org')
 // ^ and $ to check that the entire string matches, only contains what we expect
 const timeRegex = /^\d\d\d\d-(\d\d|\d)-(\d\d|\d)\s(\d\d|\d):\d\d$/
 
+let requestArray = []
+
 client.on('connect', function () {
     client.subscribe('bookingRequest')
 })
 
 client.on('message', function (topic, message) {
   message = message.toString()
-  IsJsonString(message)
+  rateLimiter(message)
+  //IsJsonString(message)
 })
 
 function IsJsonString(str) {
@@ -22,11 +25,11 @@ function IsJsonString(str) {
     if(json && typeof json === "object"){
       // Check that all attributes exsist and are of the correct type
       if(typeof json.userid === "number" && 
-        typeof json.requestid === "number" && 
-        typeof json.dentistid === "number" && 
-        typeof json.issuance === "number" && 
-        typeof json.time === "string"
-        ) {
+      typeof json.requestid === "number" && 
+      typeof json.dentistid === "number" && 
+      typeof json.issuance === "number" && 
+      typeof json.time === "string"
+      ) {
         // Check that time matches timeRegex
         if(timeRegex.test(json.time)){
           // Creates a new json object with the valid attributes, discards any extra attributes
@@ -56,4 +59,13 @@ function IsJsonString(str) {
       }
     }
   } catch (e) {}
+}
+
+let rateLimiter = (message) => {
+  
+  requestArray.push(message)
+  console.log(requestArray[0])
+  console.log(requestArray.length)
+  console.log(requestArray.shift())
+
 }
