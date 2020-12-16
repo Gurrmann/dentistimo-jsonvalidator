@@ -1,9 +1,9 @@
 var mqtt = require('mqtt')
 var client  = mqtt.connect('mqtt://test.mosquitto.org')
 // Matches the time attribute from a booking request
-// E.g. "YYYY-(MM or M)-(DD or D) (HH or H):MM" but with numbers "1234-12-1 14:30"
+// E.g. "YYYY-(MM or M)-(DD or D) (HH or H):MM" but with numbers "1234-12-01 14:30"
 // ^ and $ to check that the entire string matches, only contains what we expect
-const timeRegex = /^\d\d\d\d-(\d\d|\d)-(\d\d|\d)\s(\d\d|\d):\d\d$/
+const timeRegex = /^\d\d\d\d-\d\d-\d\d\s(\d\d|\d):\d\d$/
 
 client.on('connect', function () {
     client.subscribe('bookingRequest')
