@@ -59,7 +59,7 @@ function IsJsonString(str) {
 
 let rateLimiter = () => {
 
-  let interval = 1000
+  let interval = 200
   //decides how often the requests will be forwarded in miliseconds
   
   client.on('message', function (topic, message) {
@@ -67,13 +67,12 @@ let rateLimiter = () => {
     requestArray.push(message)
     
   })
-  //console.log(requestArray[0])
-  //console.log(requestArray.length)
+ 
+
 setInterval(() => {
 
   if (requestArray.length !== 0)
-    console.log(requestArray.shift())
-  
+    IsJsonString(requestArray.shift())
 }, interval);
 
 }
