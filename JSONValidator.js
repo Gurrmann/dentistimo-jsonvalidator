@@ -5,6 +5,23 @@ var client  = mqtt.connect('mqtt://broker.hivemq.com')
 // ^ and $ to check that the entire string matches, only contains what we expect
 const timeRegex = /^\d\d\d\d-\d\d-\d\d\s(\d\d|\d):\d\d$/
 
+process.on('exit', exitHandler.bind(null));
+process.on('SIGINT', exitHandler.bind(null, {exit:true}));
+process.on('SIGUSR1', exitHandler.bind(null, {exit:true}));
+process.on('SIGUSR2', exitHandler.bind(null, {exit:true}));
+process.on('uncaughtException', exitHandler.bind(null, {exit:true}));
+
+function exitHandler(options, exitCode) {
+  if (options.exit){ 
+    client.unsubscribe('bookingRequest')
+    console.log("client unsubscribed")
+    client.end()
+    console.log("client ended")
+
+    process.exit()
+  }
+}
+
 client.on('connect', function () {
     client.subscribe('bookingRequest')
 })
