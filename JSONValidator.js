@@ -1,5 +1,5 @@
 var mqtt = require('mqtt')
-var client  = mqtt.connect('mqtt://test.mosquitto.org')
+var client  = mqtt.connect('mqtt://broker.hivemq.com')
 // Matches the time attribute from a booking request
 // E.g. "YYYY-(MM or M)-(DD or D) (HH or H):MM" but with numbers "1234-12-01 14:30"
 // ^ and $ to check that the entire string matches, only contains what we expect
