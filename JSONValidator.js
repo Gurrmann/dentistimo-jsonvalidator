@@ -11,11 +11,7 @@ client.on('connect', function () {
     client.subscribe('bookingRequest')
 })
 
-client.on('message', function (topic, message) {
-  message = message.toString()
-  rateLimiter(message)
-  //IsJsonString(message)
-})
+//IsJsonString(message)
 
 function IsJsonString(str) {
   try {
@@ -61,11 +57,20 @@ function IsJsonString(str) {
   } catch (e) {}
 }
 
-let rateLimiter = (message) => {
+let rateLimiter = () => {
   
-  requestArray.push(message)
-  console.log(requestArray[0])
-  console.log(requestArray.length)
+  client.on('message', function (topic, message) {
+    message = message.toString()
+    requestArray.push(message)
+    
+  })
+  //console.log(requestArray[0])
+  //console.log(requestArray.length)
+setInterval(() => {
   console.log(requestArray.shift())
+  
+}, 1000);
 
 }
+
+rateLimiter()
