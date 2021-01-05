@@ -1,3 +1,4 @@
+const { request } = require('http')
 var mqtt = require('mqtt')
 var client  = mqtt.connect('mqtt://broker.hivemq.com')
 // Matches the time attribute from a booking request
@@ -22,14 +23,13 @@ function exitHandler(options, exitCode) {
   }
 }
 
+let requestArray = []
+
 client.on('connect', function () {
     client.subscribe('bookingRequest')
 })
 
-client.on('message', function (topic, message) {
-  message = message.toString()
-  IsJsonString(message)
-})
+//IsJsonString(message)
 
 function IsJsonString(str) {
   try {
@@ -39,11 +39,11 @@ function IsJsonString(str) {
     if(json && typeof json === "object"){
       // Check that all attributes exsist and are of the correct type
       if(typeof json.userid === "number" && 
-        typeof json.requestid === "number" && 
-        typeof json.dentistid === "number" && 
-        typeof json.issuance === "number" && 
-        typeof json.time === "string"
-        ) {
+      typeof json.requestid === "number" && 
+      typeof json.dentistid === "number" && 
+      typeof json.issuance === "number" && 
+      typeof json.time === "string"
+      ) {
         // Check that time matches timeRegex
         if(timeRegex.test(json.time)){
           // Creates a new json object with the valid attributes, discards any extra attributes
@@ -74,3 +74,32 @@ function IsJsonString(str) {
     }
   } catch (e) {}
 }
+
+let rateLimiter = () => {
+
+  let interval = 50
+  //decides how often the requests will be forwarded in miliseconds
+  
+  client.on('message', function (topic, message) {
+    message = message.toString()
+    requestArray.push(message)
+    
+  })
+ 
+  setInterval(() => {
+
+    
+    if (requestArray.length > 0 ) {
+    
+      IsJsonString(requestArray.shift())
+      
+      }
+    
+      if (requestArray.length >= 500)  
+      console.log('Currently expecting heavy load, Amount of requests in queue: ' + requestArray.length)
+    
+  }, interval);
+
+}
+
+rateLimiter()
