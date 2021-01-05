@@ -1,6 +1,6 @@
 const { request } = require('http')
 var mqtt = require('mqtt')
-var client  = mqtt.connect('mqtt://test.mosquitto.org')
+var client  = mqtt.connect('mqtt://broker.hivemq.com')
 // Matches the time attribute from a booking request
 // E.g. "YYYY-(MM or M)-(DD or D) (HH or H):MM" but with numbers "1234-12-1 14:30"
 // ^ and $ to check that the entire string matches, only contains what we expect
@@ -66,27 +66,27 @@ let rateLimiter = () => {
   client.on('message', function (topic, message) {
     message = message.toString()
     requestArray.push(message)
+    if (requestArray.length >= 500) {
+      let requestJSON = JSON.parse(message)
+     
+      
+      client.publish(`${requestJSON.userid}`, 'Server is currently under heavy load your appointment will be booked very soon!')
+    }
     
   })
  
   setInterval(() => {
 
     
-    if (requestArray.length > 0 && requestArray.length < 500) {
+    if (requestArray.length > 0 ) {
     
       IsJsonString(requestArray.shift())
       
-    }
+      }
     
-    if (requestArray.length >= 500) {
-      let currentRequest = requestArray.shift()
+      if (requestArray.length >= 500)  
       console.log('Currently expecting heavy load, Amount of requests in queue: ' + requestArray.length)
-      IsJsonString(currentRequest)
-      let requestJSON = JSON.parse(currentRequest)
-      client.publish(`${requestJSON.userid}`, 'Server is currently under heavy load your appointment will be booked very soon!')
-      
-
-    }
+    
   }, interval);
 
 }
