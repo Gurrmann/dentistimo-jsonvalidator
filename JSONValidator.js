@@ -1,3 +1,4 @@
+const { request } = require('http')
 var mqtt = require('mqtt')
 var client  = mqtt.connect('mqtt://test.mosquitto.org')
 // Matches the time attribute from a booking request
@@ -59,7 +60,7 @@ function IsJsonString(str) {
 
 let rateLimiter = () => {
 
-  let interval = 200
+  let interval = 50
   //decides how often the requests will be forwarded in miliseconds
   
   client.on('message', function (topic, message) {
@@ -68,12 +69,25 @@ let rateLimiter = () => {
     
   })
  
+  setInterval(() => {
 
-setInterval(() => {
+    
+    if (requestArray.length > 0 && requestArray.length < 500) {
+    
+      IsJsonString(requestArray.shift())
+      
+    }
+    
+    if (requestArray.length >= 500) {
+      let currentRequest = requestArray.shift()
+      console.log('Currently expecting heavy load, Amount of requests in queue: ' + requestArray.length)
+      IsJsonString(currentRequest)
+      let requestJSON = JSON.parse(currentRequest)
+      client.publish(`${requestJSON.userid}`, 'Server is currently under heavy load your appointment will be booked very soon!')
+      
 
-  if (requestArray.length !== 0)
-    IsJsonString(requestArray.shift())
-}, interval);
+    }
+  }, interval);
 
 }
 
