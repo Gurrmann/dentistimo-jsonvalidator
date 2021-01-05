@@ -66,12 +66,6 @@ let rateLimiter = () => {
   client.on('message', function (topic, message) {
     message = message.toString()
     requestArray.push(message)
-    if (requestArray.length >= 500) {
-      let requestJSON = JSON.parse(message)
-     
-      
-      client.publish(`${requestJSON.userid}`, 'Server is currently under heavy load your appointment will be booked very soon!')
-    }
     
   })
  
